@@ -7,12 +7,18 @@ const {
   updateOne,
   deleteOne,
 } = require("../controllers/handlerFactory");
-const invoiceModel = require('./../models/InvoiceModel');
 
-router.route("/").get(getAll(invoiceModel)).post(createOne(invoiceModel));
+const invoiceModel = require('./../models/invoiceModel');
+
+const { protect, restriction } = require("../controllers/authController");
+
+router.use(protect)
+router.route("/").get(restriction("admin"),getAll(invoiceModel)).post(restriction("student"),createOne(invoiceModel));
+
 router
   .route("/:id")
-  .get(getOne(invoiceModel))
-  .put(updateOne(invoiceModel))
-  .delete(deleteOne(invoiceModel));
+  .get(restriction("admin"),getOne(invoiceModel))
+  .put(restriction("admin"),updateOne(invoiceModel))
+  .delete(restriction("admin"),deleteOne(invoiceModel));
+  
 module.exports = router;

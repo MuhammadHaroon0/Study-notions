@@ -1,48 +1,42 @@
-const mongoose=require('mongoose')
-var validator = require('validator');
+const mongoose = require("mongoose");
 
-const invoiceSchema=new mongoose.Schema({
-    courseName:{
-        type:String,
-        required:[true,'courseName is required'],
-        minLength:4,
-        maxLength:30
-    },
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:[true,'user is required'],
-        ref:'users'
-    },
+const invoiceSchema = new mongoose.Schema({
+  courseName: {
+    type: String,
+    required: [true, "courseName is required"],
+    minLength: 4,
+    maxLength: 30,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "user is required"],
+    ref: "User",
+  },
 
-    courseID:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:[true,'courseID is required'],
-        ref:'courses'
-    },
-    price:{
-        type:String,
-        required:[true,'price is required'],
-    },
-    address:{
-        type:String,
-        required:[true,'address is required'],
-    },
-    pinCode:{
-        type:String,
-    }
-})
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "courseID is required"],
+    ref: "Course",
+  },
+  price: {
+    type: String,
+    required: [true, "price is required"],
+  },
+  pinCode: {
+    type: String,
+  },
+});
 
 //To provide efficient searching of mongodb
 // userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
 
-
 //Document middlewares,can work before or after save or create
 // Pre Save Hook
-invoiceSchema.pre('save',function(next){
-    //query middleware
-    console.log("as");
-    next()
-})
+// invoiceSchema.pre('save',function(next){
+//     //query middleware
+//     console.log("as");
+//     next()
+// })
 
 // userSchema.pre(/^find/,function(next){
 //     //query middleware
@@ -68,7 +62,7 @@ invoiceSchema.pre('save',function(next){
 
 //usually for child-parent referencing
 // userSchema.virtual('',{
-//  
+//
 // })
 
-module.exports=mongoose.model('invoices',invoiceSchema)
+module.exports = mongoose.model("Invoice", invoiceSchema);

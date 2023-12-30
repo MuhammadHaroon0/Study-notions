@@ -1,5 +1,4 @@
 const mongoose=require('mongoose')
-var validator = require('validator');
 
 const subSectionSchema=new mongoose.Schema({
     title:{
@@ -9,7 +8,7 @@ const subSectionSchema=new mongoose.Schema({
         maxLength:30
     },
     duration:{
-        type:Number,
+        type:Number, // in minutes
         required:[true,'duration is required'],
     },
     description:{
@@ -20,6 +19,10 @@ const subSectionSchema=new mongoose.Schema({
         type:String,
     },
     
+},
+{
+    toJSON:{virtuals:true},
+    toObject:{virtuals:true},
 })
 
 //To provide efficient searching of mongodb
@@ -55,9 +58,8 @@ const subSectionSchema=new mongoose.Schema({
 //     //member functions
 // }
 
-//usually for child-parent referencing
-// userSchema.virtual('',{
-//  
-// })
+subSectionSchema.virtual('durationInHours').get(function(){
+    return (this.duration/60).toFixed(1);
+})
 
-module.exports=mongoose.model('subSections',subSectionSchema)
+exports.subSectionModel=mongoose.model('SubSection',subSectionSchema)

@@ -1,25 +1,26 @@
-const mongoose=require('mongoose')
-var validator = require('validator');
+const mongoose = require("mongoose");
+const { courseModel } = require("./courseModel");
 
-const ratingSchema=new mongoose.Schema({
-    user:{
-        type:String,
-        required:[true,'user is required'],
-        minLength:4,
-        maxLength:30
-    },
-    rating:{
-        type:Number,
-        required:[true,'rating is required'],
-    },
-    review:{
-        type:String,
-    },    
-})
+const ratingSchema = new mongoose.Schema({
+  rating: {
+    type: Number,
+    required: [true, "rating is required"],
+  },
+  review: {
+    type: String,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+  },
+});
 
 //To provide efficient searching of mongodb
 // userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
-
 
 //Document middlewares,can work before or after save or create
 // Pre Save Hook
@@ -44,15 +45,28 @@ const ratingSchema=new mongoose.Schema({
 //   this.pipeline().unshift({ $match: {  } });
 //   next();
 // });
-
+ratingSchema.statics.getAvgRating = async function (courseId) {
+  const stats = await this.aggregate([
+    {
+      $match: { course: courseId },
+    },
+    {
+      $group: {
+        _id: "$course",
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+  await courseModel.findByIdAndUpdate(courseId, {
+    avgRating: stats[0].avgRating,
+  });
+};
+ratingSchema.post("save", function () {
+  this.constructor.getAvgRating(this.course); //updating avg rating soon after creating the document in course model
+});
 // userSchema.methods.FUNCTIONNAME=function()
 // {
 //     //member functions
 // }
 
-//usually for child-parent referencing
-// userSchema.virtual('',{
-//  
-// })
-
-module.exports=mongoose.model('ratings',ratingSchema)
+exports.ratingModel = mongoose.model("Rating", ratingSchema);

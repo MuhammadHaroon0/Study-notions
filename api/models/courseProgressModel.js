@@ -1,22 +1,27 @@
-const mongoose=require('mongoose')
-var validator = require('validator');
-const {courseSchema} = require('./CourseModel');
+const mongoose = require("mongoose");
 
-const tagSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'name is required'],
-        minLength:4,
-        maxLength:30
+const courseProgressSchema = new mongoose.Schema({
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+    required: [true, "course id is required"],
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "user id is required"],
+  },
+  completedVideos: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubSection",
+      unique: true,
     },
-    course:{
-        type:[courseSchema]
-    }
-})
+  ],
+});
 
 //To provide efficient searching of mongodb
 // userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
-
 
 //Document middlewares,can work before or after save or create
 // Pre Save Hook
@@ -49,7 +54,10 @@ const tagSchema=new mongoose.Schema({
 
 //usually for child-parent referencing
 // userSchema.virtual('',{
-//  
+//
 // })
 
-module.exports=mongoose.model('tags',tagSchema)
+exports.courseProgressModel = mongoose.model(
+  "CourseProgress",
+  courseProgressSchema
+);

@@ -1,22 +1,21 @@
-const mongoose=require('mongoose')
-var validator = require('validator');
+const mongoose = require("mongoose");
 
-const sectionSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'name is required'],
-        minLength:4,
-        maxLength:30
+const sectionSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "name is required"],
+    minLength: 4,
+  },
+  subSection: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubSection",
     },
-    subSection:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'subsections'
-    }
-})
+  ],
+});
 
 //To provide efficient searching of mongodb
 // userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
-
 
 //Document middlewares,can work before or after save or create
 // Pre Save Hook
@@ -49,8 +48,7 @@ const sectionSchema=new mongoose.Schema({
 
 //usually for child-parent referencing
 // userSchema.virtual('',{
-//  
+//
 // })
 
-exports.sectionModel=mongoose.model('sections',sectionSchema)
-exports.sectionSchema=sectionSchema
+exports.sectionModel = mongoose.model("Section", sectionSchema);

@@ -1,56 +1,62 @@
-const mongoose=require('mongoose')
-var validator = require('validator');
-const {sectionSchema} = require('./SectionModel');
+const mongoose = require("mongoose");
 
-const courseSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'name is required'],
-        minLength:4,
-        maxLength:30
+const courseSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "name is required"],
+      minLength: 4,
+      maxLength: 100,
     },
-    description:{
-        type:String,
-        required:[true,'description is required'],
+    description: {
+      type: String,
+      required: [true, "description is required"],
     },
-    ratings:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'ratings'
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
-    instructor:{
-        type:String,
-        required:[true,'instructor is required'],
-        minLength:4,
+    whatYouWillLearn: {
+      type: String,
+      required: [true, "whatYouWillLearn is required"],
     },
-    whatYouWillLearn:{
-        type:String,
-        required:[true,'whatYouWillLearn is required'],
+    courseContent: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Section",
+      },
+    ],
+    price: {
+      type: String,
     },
-    courseContent:[sectionSchema],
-    price:{
-        type:String,
+    thumbnail: {
+      type: String,
     },
-    thumbnail:{
-        type:String,
+    tags: [
+      {
+        type: String,
+      },
+    ],
+    avgRating: {
+      type: Number,
+      default: 3.5,
+      min: 1,
+      max: 5,
     },
-    tags:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'tags'
-    }
-})
+    createdAt: { type: Date, default: Date.now() },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 //To provide efficient searching of mongodb
 // userSchema.index({ SOMETHING : 1, SOMETHING: -1 }); //1 for ascending -1 for descending
 
-
 //Document middlewares,can work before or after save or create
 // Pre Save Hook
 // userSchema.pre('save',function(next){
-//     //query middleware
-//     next()
-// })
-
-// userSchema.pre(/^find/,function(next){
 //     //query middleware
 //     next()
 // })
@@ -73,9 +79,15 @@ const courseSchema=new mongoose.Schema({
 // }
 
 //usually for child-parent referencing
-// userSchema.virtual('',{
-//  
+courseSchema.virtual("ratings", {
+  ref: "Rating",
+  foreignField: "course",
+  localField: "_id",
+});
+// courseSchema.pre(/^find/,function(next){
+//     // this.populate("ratings")
+//     // console.log(this);
+//     // next()
 // })
-
-exports.courseModel=mongoose.model('courses',courseSchema)
-exports.courseSchema=courseSchema
+exports.courseModel = mongoose.model("Course", courseSchema);
+exports.courseSchema = courseSchema;
